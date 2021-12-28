@@ -13,21 +13,21 @@ import org.testng.Assert;
 import java.util.List;
 
 public class SearchBarControl {
-    public static void searchBC(WebDriverWait wait, WebDriver driver, String directorName, String writerName) {
+    public static void searchBC(WebDriverWait wait, WebDriver driver, String directorName, String writerName, String filmN) {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("suggestion-search"))).sendKeys("The Circus");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("suggestion-search"))).sendKeys(filmN);
             try {
                 Thread.sleep(3000);
-                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@href='/title/tt0018773?ref_=nv_sr_srsg_3']"))).click();
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(), '"+filmN+"')]"))).click();
                 try {
-                    WebElement director = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@href='/name/nm0000122/?ref_=tt_ov_dr']")));
-                    String directorNameS = director.getText();
+                    List<WebElement> directors = driver.findElements(By.xpath("//div[@class='ipc-metadata-list-item__content-container']/ul"));
+                    String directorNameS = directors.get(1).getText();
                     if (directorName.contains(directorNameS)) {
                         System.out.println("Director Bilgisi Kayıt Edilen ile Aynı");
                     }
                     try {
-                        WebElement writer = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@href='/name/nm0000122/?ref_=tt_ov_wr']")));
-                        String writerNameS = writer.getText();
+                        List<WebElement> writers = driver.findElements(By.xpath("//div[@class='ipc-metadata-list-item__content-container']/ul"));
+                        String writerNameS = writers.get(2).getText();
                         if (writerName.contains(writerNameS)) {
                             System.out.println("Writer Bilgisi Kayıt Edilen ile Aynı");
                         }
@@ -42,14 +42,14 @@ public class SearchBarControl {
                                         HttpClient client = HttpClientBuilder.create().build();
                                         HttpGet request = new HttpGet(img.getAttribute("src"));
                                         HttpResponse response = client.execute(request);
-                                        /* For valid images, the HttpStatus will be 200 */
                                         if (response.getStatusLine().getStatusCode() != 200) {
                                             System.out.println(img.getAttribute("outerHTML") + " kırık images.");
                                             brokenimgCount++;
                                         }
                                     }
                                 }
-                                wait.until(ExpectedConditions.elementToBeClickable(By.className("prevnext"))).click();
+                                if(filmN.contains("The Circus")){
+                                    wait.until(ExpectedConditions.elementToBeClickable(By.className("prevnext"))).click();
                                 int brokenimgCountNext = 0;
                                 try {
                                     List<WebElement> image_listNext = driver.findElements(By.tagName("img"));
@@ -65,10 +65,11 @@ public class SearchBarControl {
                                             }
                                         }
                                     }
+
                                 } catch (Exception e) {
                                     System.out.println(brokenimgCountNext + " tane kırık images var.");
                                     Assert.fail("Kırık Link Bulundu");
-                                }
+                                }}
                             } catch (Exception e) {
                                 System.out.println(brokenimgCount + " tane kırık images var.");
                                 Assert.fail("Kırık Link Bulundu");
@@ -84,7 +85,7 @@ public class SearchBarControl {
                     Assert.fail("Director Bilgisi Aynı Değil");
                 }
             } catch (Exception e) {
-                Assert.fail("The Circus Searclistde Bulunamadı");
+                Assert.fail("The Circus Searchlistde Bulunamadı");
             }
         } catch (Exception e) {
             Assert.fail("SearchBar'a Erişim Sağlanamadı");

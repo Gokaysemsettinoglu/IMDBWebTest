@@ -14,7 +14,10 @@ public class RunTest {
     String pageURL = "https://www.imdb.com/";
     WebDriver driver;
     JavascriptExecutor js = (JavascriptExecutor) driver;
-    String filmCircus = "Şarlo Sirkte";
+    String filmCircus = "The Circus";
+    String filmJazz = "The Jazz Singer";
+    String starC="Charles Chaplin";
+    String starA ="Al Jolson";
     @BeforeClass
     public void startBrowser() {
         System.setProperty(browserType, browserPath);
@@ -27,8 +30,8 @@ public class RunTest {
     @Test
     public void runCases() {
 
-        MenuControl.controlSearch(wait,driver,filmCircus);
-
+        MenuControl.controlSearch(wait,driver,filmCircus,starC);
+        MenuControl.controlSearch(wait,driver,filmJazz,starA);
     }
     @AfterClass
     public void tearDown()
